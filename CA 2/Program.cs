@@ -1,4 +1,6 @@
 using CA_2.Models;
+using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,11 +8,11 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("EFT Comrade")
                        ?? "Data Source=Eft.db";
 
-
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 // Add Postgres Database
-builder.Services.AddNpgsql<EftContext>(connectionString);
+builder.Services.AddDbContext<EftContext>(opt =>
+    opt.UseNpgsql(connectionString));
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -19,6 +21,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 app.UseHttpsRedirection();
