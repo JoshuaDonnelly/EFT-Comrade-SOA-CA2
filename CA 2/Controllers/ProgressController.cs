@@ -11,47 +11,47 @@ namespace CA_2.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TaskController : ControllerBase
+    public class ProgressController : ControllerBase
     {
         private readonly EftContext _context;
 
-        public TaskController(EftContext context)
+        public ProgressController(EftContext context)
         {
             _context = context;
         }
 
-        // GET: api/Task
+        // GET: api/Progress
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<EftItemTasks>>> GetEftItemTasks()
+        public async Task<ActionResult<IEnumerable<Quest>>> GetEftItems()
         {
-            return await _context.EftItemTasks.ToListAsync();
+            return await _context.EftItems.ToListAsync();
         }
 
-        // GET: api/Task/5
+        // GET: api/Progress/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<EftItemTasks>> GetEftItemTasks(int id)
+        public async Task<ActionResult<Quest>> GetEftItem(int id)
         {
-            var eftItemTasks = await _context.EftItemTasks.FindAsync(id);
+            var eftItem = await _context.EftItems.FindAsync(id);
 
-            if (eftItemTasks == null)
+            if (eftItem == null)
             {
                 return NotFound();
             }
 
-            return eftItemTasks;
+            return eftItem;
         }
 
-        // PUT: api/Task/5
+        // PUT: api/Progress/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEftItemTasks(int id, EftItemTasks eftItemTasks)
+        public async Task<IActionResult> PutEftItem(int id, Quest quest)
         {
-            if (id != eftItemTasks.id)
+            if (id != quest.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(eftItemTasks).State = EntityState.Modified;
+            _context.Entry(quest).State = EntityState.Modified;
 
             try
             {
@@ -59,7 +59,7 @@ namespace CA_2.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!EftItemTasksExists(id))
+                if (!EftItemExists(id))
                 {
                     return NotFound();
                 }
@@ -72,36 +72,36 @@ namespace CA_2.Controllers
             return NoContent();
         }
 
-        // POST: api/Task
+        // POST: api/Progress
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<EftItemTasks>> PostEftItemTasks(EftItemTasks eftItemTasks)
+        public async Task<ActionResult<Quest>> PostEftItem(Quest quest)
         {
-            _context.EftItemTasks.Add(eftItemTasks);
+            _context.EftItems.Add(quest);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetEftItemTasks), new { id = eftItemTasks.id }, eftItemTasks);
+            return CreatedAtAction("GetEftItem", new { id = quest.Id }, quest);
         }
 
-        // DELETE: api/Task/5
+        // DELETE: api/Progress/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEftItemTasks(int id)
+        public async Task<IActionResult> DeleteEftItem(int id)
         {
-            var eftItemTasks = await _context.EftItemTasks.FindAsync(id);
-            if (eftItemTasks == null)
+            var eftItem = await _context.EftItems.FindAsync(id);
+            if (eftItem == null)
             {
                 return NotFound();
             }
 
-            _context.EftItemTasks.Remove(eftItemTasks);
+            _context.EftItems.Remove(eftItem);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool EftItemTasksExists(int id)
+        private bool EftItemExists(int id)
         {
-            return _context.EftItemTasks.Any(e => e.id == id);
+            return _context.EftItems.Any(e => e.Id == id);
         }
     }
 }

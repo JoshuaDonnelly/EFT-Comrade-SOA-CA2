@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "zhALDQEitGY=",
+  "dgSpecHash": "aNcJQiuNXp8=",
   "success": true,
-  "projectFilePath": "C:\\Users\\joshu\\RiderProjects\\CA 2\\CA 2\\CA 2.csproj",
+  "projectFilePath": "C:\\Users\\joshu\\RiderProjects\\EFT-Comrade-SOA-CA2\\CA 2\\CA 2.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\joshu\\.nuget\\packages\\azure.core\\1.50.0\\azure.core.1.50.0.nupkg.sha512",
     "C:\\Users\\joshu\\.nuget\\packages\\azure.identity\\1.17.1\\azure.identity.1.17.1.nupkg.sha512",
@@ -147,9 +147,9 @@
       "code": "NU1901",
       "level": "Warning",
       "message": "Package 'NuGet.Packaging' 6.12.1 has a known low severity vulnerability, https://github.com/advisories/GHSA-g4vj-cjjj-v7hg",
-      "projectPath": "C:\\Users\\joshu\\RiderProjects\\CA 2\\CA 2\\CA 2.csproj",
+      "projectPath": "C:\\Users\\joshu\\RiderProjects\\EFT-Comrade-SOA-CA2\\CA 2\\CA 2.csproj",
       "warningLevel": 1,
-      "filePath": "C:\\Users\\joshu\\RiderProjects\\CA 2\\CA 2\\CA 2.csproj",
+      "filePath": "C:\\Users\\joshu\\RiderProjects\\EFT-Comrade-SOA-CA2\\CA 2\\CA 2.csproj",
       "libraryId": "NuGet.Packaging",
       "targetGraphs": [
         "net10.0"
@@ -159,9 +159,9 @@
       "code": "NU1901",
       "level": "Warning",
       "message": "Package 'NuGet.Protocol' 6.12.1 has a known low severity vulnerability, https://github.com/advisories/GHSA-g4vj-cjjj-v7hg",
-      "projectPath": "C:\\Users\\joshu\\RiderProjects\\CA 2\\CA 2\\CA 2.csproj",
+      "projectPath": "C:\\Users\\joshu\\RiderProjects\\EFT-Comrade-SOA-CA2\\CA 2\\CA 2.csproj",
       "warningLevel": 1,
-      "filePath": "C:\\Users\\joshu\\RiderProjects\\CA 2\\CA 2\\CA 2.csproj",
+      "filePath": "C:\\Users\\joshu\\RiderProjects\\EFT-Comrade-SOA-CA2\\CA 2\\CA 2.csproj",
       "libraryId": "NuGet.Protocol",
       "targetGraphs": [
         "net10.0"
