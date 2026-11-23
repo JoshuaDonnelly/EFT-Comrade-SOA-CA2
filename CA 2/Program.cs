@@ -1,3 +1,4 @@
+using CA_2.Data;
 using CA_2.Models;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
