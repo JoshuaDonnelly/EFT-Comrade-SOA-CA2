@@ -10,14 +10,19 @@ public class EftContext(DbContextOptions<EftContext> options) : DbContext(option
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Quest>()
+            .Property(q => q.Id)
+            .ValueGeneratedNever();
+
         modelBuilder.Entity<Quest>()
             .HasMany(q => q.Objectives)
             .WithOne(o => o.Quest)
             .HasForeignKey(o => o.QuestId);
-        
+
         modelBuilder.Entity<Quest>()
-            .HasIndex(q => q.GameId)
-            .IsUnique();
+            .HasIndex(q => q.GameId);
     }
 
 public DbSet<CA_2.Models.PlayerQuestProgress> PlayerQuestProgress { get; set; } = default!;

@@ -2,14 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using CA_2.Data;
+using CA_2.DTOs;
 using CA_2.Models;
 
 namespace CA_2.Controllers
 {
-    public class QuestsController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class QuestsController : ControllerBase
     {
         private readonly EftContext _context;
 
@@ -18,139 +22,98 @@ namespace CA_2.Controllers
             _context = context;
         }
 
-        // GET: Quests
-        public async Task<IActionResult> Index()
+        // GET: api/Quests
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Quest>>> GetQuests()
         {
-            return View(await _context.EftItems.ToListAsync());
+            var quests = await _context.Quests
+                .AsNoTracking()
+                .Select(q => new QuestDto(
+                    q.Id,
+                    q.Title,
+                    q.RequiredLevel,
+                    q.Experience))
+                .ToListAsync();
+            return Ok(quests);
+            return await _context.Quests.ToListAsync();
         }
 
-        // GET: Quests/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: api/Quests/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Quest>> GetQuest(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            var quest = await _context.Quests.FindAsync(id);
 
-            var quest = await _context.EftItems
-                .FirstOrDefaultAsync(m => m.Id == id);
             if (quest == null)
             {
                 return NotFound();
             }
 
-            return View(quest);
+            return quest;
         }
 
-        // GET: Quests/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Quests/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,GameId,Title,TraderId,RequiredLevel,Experience")] Quest quest)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(quest);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(quest);
-        }
-
-        // GET: Quests/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var quest = await _context.EftItems.FindAsync(id);
-            if (quest == null)
-            {
-                return NotFound();
-            }
-            return View(quest);
-        }
-
-        // POST: Quests/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,GameId,Title,TraderId,RequiredLevel,Experience")] Quest quest)
+        // PUT: api/Quests/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutQuest(int id, Quest quest)
         {
             if (id != quest.Id)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            if (ModelState.IsValid)
+            _context.Entry(quest).State = EntityState.Modified;
+
+            try
             {
-                try
-                {
-                    _context.Update(quest);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!QuestExists(quest.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                await _context.SaveChangesAsync();
             }
-            return View(quest);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!QuestExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
 
-        // GET: Quests/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // POST: api/Quests
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost]
+        public async Task<ActionResult<Quest>> PostQuest(Quest quest)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            _context.Quests.Add(quest);
+            await _context.SaveChangesAsync();
 
-            var quest = await _context.EftItems
-                .FirstOrDefaultAsync(m => m.Id == id);
+            return CreatedAtAction("GetQuest", new { id = quest.Id }, quest);
+        }
+
+        // DELETE: api/Quests/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteQuest(int id)
+        {
+            var quest = await _context.Quests.FindAsync(id);
             if (quest == null)
             {
                 return NotFound();
             }
 
-            return View(quest);
-        }
-
-        // POST: Quests/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var quest = await _context.EftItems.FindAsync(id);
-            if (quest != null)
-            {
-                _context.EftItems.Remove(quest);
-            }
-
+            _context.Quests.Remove(quest);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return NoContent();
         }
 
         private bool QuestExists(int id)
         {
-            return _context.EftItems.Any(e => e.Id == id);
+            return _context.Quests.Any(e => e.Id == id);
         }
     }
+    public record QuestDto(int Id, string Title, int RequiredLevel, int Experience);
 }

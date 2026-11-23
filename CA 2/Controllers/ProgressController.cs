@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using CA_2.Data;
 using CA_2.Models;
 
 namespace CA_2.Controllers
@@ -22,36 +23,36 @@ namespace CA_2.Controllers
 
         // GET: api/Progress
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Quest>>> GetEftItems()
+        public async Task<ActionResult<IEnumerable<PlayerQuestProgress>>> GetPlayerQuestProgress()
         {
-            return await _context.EftItems.ToListAsync();
+            return await _context.PlayerQuestProgress.ToListAsync();
         }
 
         // GET: api/Progress/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Quest>> GetEftItem(int id)
+        public async Task<ActionResult<PlayerQuestProgress>> GetPlayerQuestProgress(int id)
         {
-            var eftItem = await _context.EftItems.FindAsync(id);
+            var playerQuestProgress = await _context.PlayerQuestProgress.FindAsync(id);
 
-            if (eftItem == null)
+            if (playerQuestProgress == null)
             {
                 return NotFound();
             }
 
-            return eftItem;
+            return playerQuestProgress;
         }
 
         // PUT: api/Progress/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEftItem(int id, Quest quest)
+        public async Task<IActionResult> PutPlayerQuestProgress(int id, PlayerQuestProgress playerQuestProgress)
         {
-            if (id != quest.Id)
+            if (id != playerQuestProgress.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(quest).State = EntityState.Modified;
+            _context.Entry(playerQuestProgress).State = EntityState.Modified;
 
             try
             {
@@ -59,7 +60,7 @@ namespace CA_2.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!EftItemExists(id))
+                if (!PlayerQuestProgressExists(id))
                 {
                     return NotFound();
                 }
@@ -75,33 +76,33 @@ namespace CA_2.Controllers
         // POST: api/Progress
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Quest>> PostEftItem(Quest quest)
+        public async Task<ActionResult<PlayerQuestProgress>> PostPlayerQuestProgress(PlayerQuestProgress playerQuestProgress)
         {
-            _context.EftItems.Add(quest);
+            _context.PlayerQuestProgress.Add(playerQuestProgress);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetEftItem", new { id = quest.Id }, quest);
+            return CreatedAtAction("GetPlayerQuestProgress", new { id = playerQuestProgress.Id }, playerQuestProgress);
         }
 
         // DELETE: api/Progress/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEftItem(int id)
+        public async Task<IActionResult> DeletePlayerQuestProgress(int id)
         {
-            var eftItem = await _context.EftItems.FindAsync(id);
-            if (eftItem == null)
+            var playerQuestProgress = await _context.PlayerQuestProgress.FindAsync(id);
+            if (playerQuestProgress == null)
             {
                 return NotFound();
             }
 
-            _context.EftItems.Remove(eftItem);
+            _context.PlayerQuestProgress.Remove(playerQuestProgress);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool EftItemExists(int id)
+        private bool PlayerQuestProgressExists(int id)
         {
-            return _context.EftItems.Any(e => e.Id == id);
+            return _context.PlayerQuestProgress.Any(e => e.Id == id);
         }
     }
 }

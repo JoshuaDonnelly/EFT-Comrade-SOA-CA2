@@ -3,7 +3,7 @@
 public class Quest
 {
     public int Id { get; set; }
-    public string GameId { get; set; } = "";
+    public string? GameId { get; set; }
     public string Title { get; set; } = "";
     
     public int TraderId { get; set; }
