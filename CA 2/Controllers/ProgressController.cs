@@ -1,108 +1,91 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CA_2.Data;
 using CA_2.Models;
+using CA_2.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using NuGet.Protocol.Core.Types;
 
 namespace CA_2.Controllers
 {
-    [Route("api/[controller]")]
+    [Authorize]
+    [Route("api/me/quests")]
     [ApiController]
-    public class ProgressController : ControllerBase
+    public class ProgressController(IQuestProgressRepository repository) : ControllerBase
     {
-        private readonly EftContext _context;
-
-        public ProgressController(EftContext context)
+ 
+        // GET: api/me/quests/0
+        [HttpGet("{questId:int}")]
+        public async Task<IActionResult> GetProgress(int questId)
         {
-            _context = context;
-        }
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        // GET: api/Progress
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<PlayerQuestProgress>>> GetPlayerQuestProgress()
-        {
-            return await _context.PlayerQuestProgress.ToListAsync();
-        }
+            if (userId is null)
+                return Unauthorized();
 
-        // GET: api/Progress/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<PlayerQuestProgress>> GetPlayerQuestProgress(int id)
-        {
-            var playerQuestProgress = await _context.PlayerQuestProgress.FindAsync(id);
+            var progress = await repository.GetAsync(userId, questId);
 
-            if (playerQuestProgress == null)
-            {
+            if (progress is null)
                 return NotFound();
-            }
 
-            return playerQuestProgress;
+            return Ok(new
+            {
+                progress.QuestId,
+                QuestTitle = progress.Quest.Title,
+                progress.Status,
+                progress.CompletedAt
+            });
         }
-
-        // PUT: api/Progress/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutPlayerQuestProgress(int id, PlayerQuestProgress playerQuestProgress)
+       
+        // POST: api/Quests/Progress
+        // Method to read quests and retrieve player progress
+        [HttpPost("{questId:int}")]
+        public async Task<IActionResult> StartQuest(int questId)
         {
-            if (id != playerQuestProgress.Id)
-            {
-                return BadRequest();
-            }
+            // Get the authenticated User's ID
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            _context.Entry(playerQuestProgress).State = EntityState.Modified;
+            if (userId == null)
+                return Unauthorized();
+            
+            // Check for existing progress on a quest
+            var existingProgress = await repository.GetAsync(userId, questId);
 
-            try
+            if (existingProgress is not null)
+                return Conflict("Quest is already tracked");
+            
+            // Verify the quest exists
+            if (!await repository.QuestExistsAsync(questId))
+                return NotFound("Quest does not exist.");
+            
+            // Create the progress record
+            var progress = new PlayerQuestProgress
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PlayerQuestProgressExists(id))
+                UserId = userId,
+                QuestId = questId,
+                Status = "NotStarted"
+            };
+            
+            await repository.AddAsync(progress);
+
+            return CreatedAtAction(
+                nameof(GetProgress),
+                new { questId },
+                new
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+                    progress.QuestId,
+                    progress.Status,
+                    progress.CompletedAt
+                });
         }
+        
 
-        // POST: api/Progress
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<PlayerQuestProgress>> PostPlayerQuestProgress(PlayerQuestProgress playerQuestProgress)
-        {
-            _context.PlayerQuestProgress.Add(playerQuestProgress);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetPlayerQuestProgress", new { id = playerQuestProgress.Id }, playerQuestProgress);
-        }
-
-        // DELETE: api/Progress/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePlayerQuestProgress(int id)
-        {
-            var playerQuestProgress = await _context.PlayerQuestProgress.FindAsync(id);
-            if (playerQuestProgress == null)
-            {
-                return NotFound();
-            }
-
-            _context.PlayerQuestProgress.Remove(playerQuestProgress);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool PlayerQuestProgressExists(int id)
-        {
-            return _context.PlayerQuestProgress.Any(e => e.Id == id);
-        }
+        
     }
 }

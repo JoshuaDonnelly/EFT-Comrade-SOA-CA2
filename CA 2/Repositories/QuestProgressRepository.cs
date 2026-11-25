@@ -49,4 +49,9 @@ public class QuestProgressRepository(EftContext context) : IQuestProgressReposit
         context.PlayerQuestProgress.Remove(progress);
         await context.SaveChangesAsync();
     }
+
+    public async Task<bool> QuestExistsAsync(int questId)
+    {
+        return await context.Quests.AnyAsync(p => p.Id == questId);
+    }
 }

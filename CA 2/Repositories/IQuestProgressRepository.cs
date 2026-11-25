@@ -14,4 +14,5 @@ public interface IQuestProgressRepository
     Task AddAsync(PlayerQuestProgress progress);
     Task UpdateAsync(PlayerQuestProgress progress);
     Task DeleteAsync(PlayerQuestProgress progress);
+    Task<bool> QuestExistsAsync(int questId);
 }
