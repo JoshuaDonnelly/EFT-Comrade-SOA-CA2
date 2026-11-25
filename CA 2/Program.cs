@@ -1,6 +1,7 @@
 using CA_2.Data;
 using CA_2.Models;
 using CA_2.Services;
+using CA_2.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using Microsoft.AspNetCore.Identity;
@@ -17,12 +18,16 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<QuestImportService>();
 
+// Registers the database
 builder.Services.AddDbContext<EftContext>(opt =>
     opt.UseNpgsql(connectionString));
 
 // Register identity with our endpoints
 builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
     .AddEntityFrameworkStores<EftContext>();
+
+// Register the repositories
+builder.Services.AddScoped<IQuestProgressRepository, QuestProgressRepository>();
 
 // Enable Authorisation
 builder.Services.AddAuthorization();
