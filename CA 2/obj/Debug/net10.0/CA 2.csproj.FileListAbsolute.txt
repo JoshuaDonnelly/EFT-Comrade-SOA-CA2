@@ -625,3 +625,4 @@ C:\Users\joshu\RiderProjects\EFT-Comrade-SOA-CA2\CA 2\obj\Debug\net10.0\ref\CA 2
 C:\Users\joshu\RiderProjects\EFT-Comrade-SOA-CA2\CA 2\bin\Debug\net10.0\Data\SeedData\quests.json
 C:\Users\joshu\RiderProjects\EFT-Comrade-SOA-CA2\CA 2\obj\Debug\net10.0\CA 2.RazorAssemblyInfo.cache
 C:\Users\joshu\RiderProjects\EFT-Comrade-SOA-CA2\CA 2\obj\Debug\net10.0\CA 2.RazorAssemblyInfo.cs
+C:\Users\joshu\RiderProjects\EFT-Comrade-SOA-CA2\CA 2\bin\Debug\net10.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
