@@ -43,6 +43,28 @@ namespace CA_2.Controllers
                 progress.CompletedAt
             });
         }
+        // GET (all) : api/me/quests
+        [HttpGet]
+        public async Task<IActionResult> GetAllProgress()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            if (userId is null)
+                return Unauthorized();
+            
+            // Ask repository to retrieve all records for a user
+            var progress =  await repository.GetAllAsync(userId);
+            
+            // Convert EF entities to response DTOs, for every progress record, a QuestProgressDto is created
+            var result = progress.Select(p => new QuestProgressDto(
+                p.QuestId,
+                p.Quest.Title,
+                p.Status,
+                p.CompletedAt
+                )).ToList();
+            
+            return Ok(result);
+        }
        
         // POST: api/Quests/Progress
         // Method to read quests and retrieve player progress
