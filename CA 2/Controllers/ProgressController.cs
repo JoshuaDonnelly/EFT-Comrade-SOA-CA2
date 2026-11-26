@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CA_2.Data;
+using CA_2.DTOs;
 using CA_2.Models;
 using CA_2.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -83,6 +84,55 @@ namespace CA_2.Controllers
                     progress.Status,
                     progress.CompletedAt
                 });
+        }
+        
+        // HTTP PUT: api/me/quests/0
+        [HttpPut("{questId:int}")]
+        
+        // From body converts the request to convert to our DTO
+        public async Task<IActionResult> UpdateProgress(int questId, [FromBody] UpdateQuestProgressDto dto)
+        {
+            // Get the user's id from identity claims
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            if (userId is null)
+                return Unauthorized();
+            
+            // Define an array of statuses the API accepts
+            var validStatuses = new[]
+            {
+                "NotStarted",
+                "InProgress",
+                "Completed"
+            };
+            if (!validStatuses.Contains(dto.status))
+            {
+                return BadRequest("Invalid status");
+            }
+            
+            // Retrieve quest progress for a specific user
+            var progress = await repository.GetAsync(userId, questId);
+            
+            if (progress is null)
+                return NotFound("Quest does not exist.");
+            
+            // Update the progress, SaveChangesAsync is tracked for changes
+            progress.Status =  dto.status;
+            
+            // Update completion date. If quest is completed store the time, if not remove timestamp
+            progress.CompletedAt = dto.status == "Completed" ? DateTime.UtcNow : null;
+            
+            // Persist the changes
+            await repository.UpdateAsync(progress);
+            
+            // Return 200 with updated progress, create a response object using Dto constructor
+            return Ok(new QuestProgressDto(
+                progress.QuestId,
+                progress.Quest.Title,
+                progress.Status,
+                progress.CompletedAt
+            ));
+
         }
         
 
