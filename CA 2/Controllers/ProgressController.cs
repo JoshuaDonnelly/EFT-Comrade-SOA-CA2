@@ -135,6 +135,28 @@ namespace CA_2.Controllers
 
         }
         
+        // HTTP DELETE: api/me/quests/0
+        [HttpDelete("{questId:int}")]
+
+        public async Task<IActionResult> DeleteProgress(int questId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            if (userId is null)
+                return Unauthorized();
+            
+            var progress = await repository.GetAsync(userId, questId);
+            
+            if (progress is null)
+                return NotFound("Quest does not exist.");
+            
+            // Delete operation on players quest progress
+            await repository.DeleteAsync(progress);
+            
+            // Return No Content, indicates deletion was successful
+            return NoContent();
+        }
+        
 
         
     }
